@@ -22,7 +22,7 @@ jobs:
         id: last_commit_author
         run: |
           MODIFIED_LINE="${{ steps.modified_line.outputs.line }}"
-          LAST_COMMIT_AUTHOR=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          LAST_COMMIT_AUTHOR=$(curl -s -H "Authorization: token ${{ secrets.API_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/commits?per_page=1" \
             | jq -r ".[] | select(.commit.message | contains(\"+$MODIFIED_LINE\")) | .author.login")
           echo "::set-output name=author::$LAST_COMMIT_AUTHOR"
@@ -32,7 +32,7 @@ jobs:
         run: |
           AUTHOR="${{ steps.last_commit_author.outputs.author }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
-          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          curl -X POST -H "Authorization: token ${{ secrets.API_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{\"reviewers\": [\"$AUTHOR\"]}" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/requested_reviewers"
