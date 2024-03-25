@@ -19,7 +19,8 @@ jobs:
           echo "MODIFIED_LINE=$MODIFIED_LINE" >> $GITHUB_ENV
 
       - name: Print Modified Line
-        run: echo "Modified Line: $MODIFIED_LINE"
+        run: |
+          echo "Modified Line: $MODIFIED_LINE"
 
 
       - name: Get last commit author
