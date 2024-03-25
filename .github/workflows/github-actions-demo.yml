@@ -18,6 +18,10 @@ jobs:
           MODIFIED_LINE=$(git diff --unified=0 ${{ github.event.before }} ${{ github.sha }} | grep '^@@' | sed -E 's/@@.*\+(\S+),.*/\1/')
           echo "MODIFIED_LINE=$MODIFIED_LINE" >> $GITHUB_ENV
 
+      - name: Print Modified Line
+        run: echo "Modified Line: $MODIFIED_LINE"
+
+
       - name: Get last commit author
         id: last_commit_author
         run: |
