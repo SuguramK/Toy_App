@@ -4,9 +4,6 @@ on:
   pull_request:
     types: [opened, edited]
 
-env:
-  ACTIONS_STEP_DEBUG: true
-
 jobs:
   add_reviewer:
     runs-on: ubuntu-latest
@@ -20,6 +17,7 @@ jobs:
         run: |
           LAST_COMMIT_AUTHOR="${{ github.event.commits[0].author.name }}"
           echo "LAST_COMMIT_AUTHOR=$LAST_COMMIT_AUTHOR" >> $GITHUB_ENV
+          echo "Last commit author name: $LAST_COMMIT_AUTHOR"  # Print the last commit author name
 
       - name: Add reviewer
         if: github.event_name == 'pull_request'
