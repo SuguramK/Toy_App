@@ -5,26 +5,17 @@ on:
     types: [opened, edited]
 
 jobs:
-  auto_review:
+  add_reviewer:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get modified line number
-        id: modified_line
-        run: |
-          MODIFIED_LINE=$(git diff --unified=0 ${{ github.event.before }} ${{ github.sha }} | grep '^@@' | sed -E 's/@@.*\+(\S+),.*/\1/')
-          echo "MODIFIED_LINE=$MODIFIED_LINE" >> $GITHUB_ENV
-
       - name: Get last commit author
         id: last_commit_author
         run: |
-          MODIFIED_LINE="${{ steps.modified_line.outputs.MODIFIED_LINE }}"
-          LAST_COMMIT_AUTHOR=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/commits?per_page=1" \
-            | jq -r ".[] | select(.commit.message | contains(\"+$MODIFIED_LINE\")) | .author.login")
+          LAST_COMMIT_AUTHOR="${{ github.event.commits[0].author.name }}"
           echo "LAST_COMMIT_AUTHOR=$LAST_COMMIT_AUTHOR" >> $GITHUB_ENV
 
       - name: Add reviewer
@@ -33,7 +24,7 @@ jobs:
           AUTHOR="${{ steps.last_commit_author.outputs.LAST_COMMIT_AUTHOR }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
           echo "Author to add as reviewer: $AUTHOR"
-          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          curl -X POST -H "Authorization: token ${{ secrets.API_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{\"reviewers\": [\"$AUTHOR\"]}" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/requested_reviewers"
