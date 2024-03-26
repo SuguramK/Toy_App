@@ -15,9 +15,8 @@ jobs:
       - name: Get last commit author
         id: last_commit_author
         run: |
-          LAST_COMMIT_AUTHOR="${{ github.event.commits[0].author.name }}"
+          LAST_COMMIT_AUTHOR=$(git log --pretty=format:'%an' -n 1)
           echo "LAST_COMMIT_AUTHOR=$LAST_COMMIT_AUTHOR" >> $GITHUB_ENV
-          echo "Last commit author name: $LAST_COMMIT_AUTHOR"  # Print the last commit author name
 
       - name: Add reviewer
         if: github.event_name == 'pull_request'
